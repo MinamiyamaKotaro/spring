@@ -1,0 +1,35 @@
+version: '3'
+services:
+  # Javaの設定情報
+  java:
+    # コンテナ名
+    container_name: spring
+    build: ./java
+    ports:
+     - "8080:8080"
+    # local参照先:コンテナ展開先
+    volumes:
+    - ./build/libs:/app
+    # コンテナ内のディレクトリ定義
+    working_dir: /app
+    tty: true
+
+  # postgresの設定情報
+  postgres:
+    # コンテナ名
+    container_name: sample-db
+    # ビルドするDockerImageが格納されているディレクトリ
+    build: ./postgres
+    # OS起動時に自動でコンテナを起動させる(=always)
+    restart: always
+    # hostポート番号:コンテナポート番号
+    ports:
+      - "5432:5432"
+    # 初期SQL
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    expose:
+      - "5432"
